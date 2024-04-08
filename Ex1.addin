@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>Reseteador de parametros</Name>
+		<FullClassName>Ex1.Main</FullClassName>
+		<Assembly>C:\Users\MSI_DB\source\repos\ExerciciosFran\Ex1\bin\x64\Debug\Ex1.dll</Assembly>
+		<AddInId>C30C979C-AC63-44F9-9169-378506DAAEFD</AddInId>
+		<VendorId>Mario Leon</VendorId>
+		<VendorDescription>Descripcion detallada del proyecto</VendorDescription>
+	</AddIn>
+</RevitAddIns>
