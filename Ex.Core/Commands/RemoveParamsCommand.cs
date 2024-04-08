@@ -1,15 +1,15 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
+using Ex.Ex1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Ex.Core;
 
-namespace Ex.Ex1
+namespace Ex.Core
 {
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
@@ -24,7 +24,7 @@ namespace Ex.Ex1
             // Check if we are in the Revit project , not in family one.
             if (doc.IsFamilyDocument)
             {
-                Core.Message.Display("Can't use command in family document", WindowType.Warning);
+                Message.Display("Can't use command in family document", WindowType.Warning);
                 return Result.Cancelled;
             }
 
@@ -41,7 +41,7 @@ namespace Ex.Ex1
                 instances = window.GetInstances();
             }
 
-            // Open Revit document transaction to edit all Instance Properties.
+            // Open Revit document transaction to edit all Selected Instance Properties.
             using (var transaction = new Transaction(doc))
             {
                 transaction.Start("Remove Parameters Command");

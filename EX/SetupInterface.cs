@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
-using Ex.Ex1;
-using Ex.Ex2;
+using Ex.Core;
 
 namespace Ex
 {
@@ -19,19 +18,21 @@ namespace Ex
             string tabName = "Mario";
             app.CreateRibbonTab(tabName);
 
-            // -------------- EX1 -------------- //
+            // Create ribbon panels
             var panelEx1 = app.CreateRibbonPanel(tabName, "Ex1");
+            var panelEx2 = app.CreateRibbonPanel(tabName, "Ex2");
+
+            // -------------- EX1 -------------- //
             RevitPushButton btEx1 = new RevitPushButton("Reseteador de parametros", panelEx1, 
                                                         "Descripcion", RemoveParamsCommand.GetPath(), 
                                                         "32_px.png", "windows_128_px.png");
-            btEx1.Create();
+            var bt1 = btEx1.Create();
 
             // -------------- EX2 -------------- //
-            var panelEx2 = app.CreateRibbonPanel(tabName, "Ex2");
             RevitPushButton btEx2 = new RevitPushButton("Por Saber", panelEx2,
                                                         "Descripcion", Command.GetPath(),
                                                         "32_px.png", "windows_128_px.png");
-            btEx2.Create();
+            var bt2 = btEx2.Create();
         }
     }
 }

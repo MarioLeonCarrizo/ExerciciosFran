@@ -32,6 +32,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -73,13 +91,13 @@
       <Project>{f8725f0f-1760-4597-a716-43aab8ed1ac0}</Project>
       <Name>Ex.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Ex.Ex1\Ex.Ex1.csproj">
+      <Project>{3cecb5ee-6c58-4034-a441-9dab62831317}</Project>
+      <Name>Ex.Ex1</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Ex.Ex2\Ex.Ex2.csproj">
       <Project>{c090b18f-9960-4230-8a82-798ad8e57425}</Project>
       <Name>Ex.Ex2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Ex1\Ex.Ex1.csproj">
-      <Project>{3cecb5ee-6c58-4034-a441-9dab62831317}</Project>
-      <Name>Ex.Ex1</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

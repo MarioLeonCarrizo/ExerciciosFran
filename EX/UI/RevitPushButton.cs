@@ -1,4 +1,5 @@
 ﻿using Autodesk.Revit.UI;
+using Ex.Core;
 using System;
 using System.Reflection;
 
@@ -29,7 +30,7 @@ namespace Ex
             var btnDataName = Guid.NewGuid().ToString();
 
             // Sets the button data.
-            var btnData = new PushButtonData(btnDataName, Label, Assembly.GetExecutingAssembly().Location, CommandNamespacePath)
+            var btnData = new PushButtonData(btnDataName, Label, CoreAssembly.GetAssemblyLocation(), CommandNamespacePath)
             {
                 ToolTip = Tooltip,
                 LargeImage = ResourceImage.GetIcon(IconImageName),

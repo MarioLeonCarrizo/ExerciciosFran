@@ -42,6 +42,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,8 +51,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="CoreAssembly.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Commands\RemoveParamsCommand.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ex.Ex1\Ex.Ex1.csproj">
+      <Project>{3cecb5ee-6c58-4034-a441-9dab62831317}</Project>
+      <Name>Ex.Ex1</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Ex.Ex2\Ex.Ex2.csproj">
+      <Project>{c090b18f-9960-4230-8a82-798ad8e57425}</Project>
+      <Name>Ex.Ex2</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

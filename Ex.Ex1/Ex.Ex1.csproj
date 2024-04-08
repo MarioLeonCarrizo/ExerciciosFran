@@ -79,19 +79,12 @@
     <Compile Include="FrmSelectFamily.Designer.cs">
       <DependentUpon>FrmSelectFamily.cs</DependentUpon>
     </Compile>
-    <Compile Include="RemoveParamsCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FrmSelectFamily.resx">
       <DependentUpon>FrmSelectFamily.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Ex.Core\Ex.Core.csproj">
-      <Project>{f8725f0f-1760-4597-a716-43aab8ed1ac0}</Project>
-      <Name>Ex.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

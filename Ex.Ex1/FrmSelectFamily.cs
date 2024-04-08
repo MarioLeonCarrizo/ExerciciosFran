@@ -42,8 +42,6 @@ namespace Ex.Ex1
         private List<string> GetAllFamilies()
         {
             List<string> familiesName = new List<string>();
-
-            ICollection<Element> families = new FilteredElementCollector(doc).OfClass(typeof(Family)).ToElements();
             IEnumerable<Element> elements = new FilteredElementCollector(doc).OfClass(typeof(ElementType)).WhereElementIsElementType().ToElements();
             
             foreach(Element f in elements)
@@ -53,7 +51,7 @@ namespace Ex.Ex1
 
                 if (f is ElementType elementType)
                     if(!string.IsNullOrEmpty(elementType.FamilyName))
-                    familiesName.Add(elementType.FamilyName.ToString());
+                        familiesName.Add(elementType.FamilyName.ToString());
             }
 
             familiesName.Sort();
@@ -64,26 +62,13 @@ namespace Ex.Ex1
         private List<string> GetAllTypes(string nameFamily)
         {
             List<string> typesName = new List<string>();
-
-            //ICollection<Element> families = new FilteredElementCollector(doc).OfClass(typeof(ElementType)).ToElements();
-            //ElementType targetFamily = families.Cast<ElementType>().FirstOrDefault(f => f.FamilyName == nameFamily);
-
-            //if (targetFamily == null)
-            //    return null;
-
             
             ICollection<Element> elements = new FilteredElementCollector(doc).WhereElementIsElementType().ToElements();
             IEnumerable<Element> types = elements.Cast<ElementType>().Where(f => f.FamilyName == nameFamily);
 
-            //ICollection<ElementId> typeIds = targetFamily.GetValidTypes();
             foreach (Element type in types)
             {
                 typesName.Add(type.Name);
-
-                //if (type is FamilySymbol familySymbol)
-                //    typesName.Add(familySymbol.Name);
-                //else if (type is ElementType elementType)
-                //    typesName.Add(elementType.Name);
             }
 
             return typesName;
@@ -111,7 +96,7 @@ namespace Ex.Ex1
             lbInfo.Text = "";
             List<Element> instances = GetInstances();
             foreach (Element instance in instances)
-                lbInfo.Text += instance.Name + "-" + instance.Id.IntegerValue + " | ";
+                lbInfo.Text += instance.Name + "-" + instance.Id.IntegerValue + "\n";
         }
 
         public List<Element> GetInstances()
