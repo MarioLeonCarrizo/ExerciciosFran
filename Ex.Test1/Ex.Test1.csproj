@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C090B18F-9960-4230-8A82-798AD8E57425}</ProjectGuid>
+    <ProjectGuid>{CC3A35B7-6D09-49CC-90A2-1700C1DE5C31}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ex.Ex2</RootNamespace>
-    <AssemblyName>Ex.Ex2</AssemblyName>
+    <RootNamespace>Ex.Test1</RootNamespace>
+    <AssemblyName>Ex.Test1</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -31,12 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RevitAPI, Version=21.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="RevitAPI">
       <HintPath>..\..\cbb\exc\RevitAPI.dll</HintPath>
     </Reference>
-    <Reference Include="RevitAPIUI, Version=21.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="RevitAPIUI">
       <HintPath>..\..\cbb\exc\RevitAPIUI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -51,18 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FrmSelectorVistas.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FrmSelectorVistas.Designer.cs">
-      <DependentUpon>FrmSelectorVistas.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="FrmSelectorVistas.resx">
-      <DependentUpon>FrmSelectorVistas.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
