@@ -10,7 +10,8 @@ using System.Xml.Linq;
 using System.Windows.Media;
 using System.Security.Cryptography;
 using System.Collections.ObjectModel;
-namespace Ex1
+
+namespace Ex.Ex1
 {
     public partial class FrmSelectFamily : System.Windows.Forms.Form
     {

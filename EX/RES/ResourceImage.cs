@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media.Imaging;
 
-namespace Ex1
+namespace Ex
 {
     public static class ResourceImage
     {

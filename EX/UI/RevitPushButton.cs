@@ -2,7 +2,7 @@
 using System;
 using System.Reflection;
 
-namespace Ex1
+namespace Ex
 {
     public class RevitPushButton
     {

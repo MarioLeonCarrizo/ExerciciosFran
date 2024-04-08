@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Ex.Core;
 
-namespace Ex1
+namespace Ex.Ex1
 {
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
-    public class LayerCommand : IExternalCommand
+    public class RemoveParamsCommand : IExternalCommand
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
@@ -23,32 +24,8 @@ namespace Ex1
             // Check if we are in the Revit project , not in family one.
             if (doc.IsFamilyDocument)
             {
-                Message.Display("Can't use command in family document", WindowType.Warning);
+                Core.Message.Display("Can't use command in family document", WindowType.Warning);
                 return Result.Cancelled;
-            }
-
-            // Get access to current view.
-            var activeView = uidoc.ActiveView;
-
-            // Check if Text Note can be created in currently active project view.
-            bool canCreateTextNoteInView = false;
-            switch (activeView.ViewType)
-            {
-                case ViewType.FloorPlan:
-                    canCreateTextNoteInView = true;
-                    break;
-                case ViewType.CeilingPlan:
-                    canCreateTextNoteInView = true;
-                    break;
-                case ViewType.Detail:
-                    canCreateTextNoteInView = true;
-                    break;
-                case ViewType.Elevation:
-                    canCreateTextNoteInView = true;
-                    break;
-                case ViewType.Section:
-                    canCreateTextNoteInView = true;
-                    break;
             }
 
             // Collector for data provided in window.
@@ -93,13 +70,7 @@ namespace Ex1
         public static string GetPath()
         {
             // Return constructed namespace path.
-            return typeof(LayerCommand).Namespace + "." + nameof(LayerCommand);
+            return typeof(RemoveParamsCommand).Namespace + "." + nameof(RemoveParamsCommand);
         }
-    }
-
-    public class LayersCommandData
-    {
-        public bool Name { get; set; }
-        public ElementId TextTypeId { get; set; }
     }
 }

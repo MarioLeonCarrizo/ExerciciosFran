@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ex1
+namespace Ex
 {
     public static class ResourceAssembly
     {

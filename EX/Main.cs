@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
 
-namespace Ex1
+namespace Ex
 {
     public class Main : IExternalApplication
     {

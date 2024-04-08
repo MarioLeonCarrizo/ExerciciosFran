@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ex1
+namespace Ex.Core
 {
     public enum WindowType
     {

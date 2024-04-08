@@ -1,4 +1,4 @@
-﻿namespace Ex1
+﻿namespace Ex.Ex1
 {
     partial class FrmSelectFamily
     {
