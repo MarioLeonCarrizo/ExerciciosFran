@@ -33,7 +33,7 @@
             // 
             // btViewSheet
             // 
-            this.btViewSheet.Location = new System.Drawing.Point(771, 12);
+            this.btViewSheet.Location = new System.Drawing.Point(716, 12);
             this.btViewSheet.Name = "btViewSheet";
             this.btViewSheet.Size = new System.Drawing.Size(109, 31);
             this.btViewSheet.TabIndex = 2;
@@ -43,9 +43,10 @@
             // 
             // FrmSelectorVistas
             // 
+            this.AcceptButton = this.btViewSheet;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(890, 487);
+            this.ClientSize = new System.Drawing.Size(832, 563);
             this.Controls.Add(this.btViewSheet);
             this.MaximizeBox = false;
             this.MinimizeBox = false;

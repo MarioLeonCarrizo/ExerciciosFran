@@ -27,12 +27,13 @@ namespace Ex.Ex2
         ViewSheet vs;
         List<Viewport> viewports = new List<Viewport>();
 
-        public FrmSelectorVistas(UIDocument uiDoc)
+        public FrmSelectorVistas(UIDocument uiDoc, ViewSheet xvs)
         {
             InitializeComponent();
             this.uiDoc = uiDoc;
             doc = uiDoc.Document;
             viewsCollector = new FilteredElementCollector(doc).OfClass(typeof(View)).ToElements();
+            vs = xvs;
         }
 
         private void FrmSelectorVistas_Load(object sender, EventArgs e)
@@ -79,19 +80,11 @@ namespace Ex.Ex2
             {
                 View view = element as View;
                 string viewType = view.ViewType.ToString();
-                if (!views.Contains(viewType) && view.ViewType != ViewType.SystemBrowser)
+                if (!views.Contains(viewType) && Viewport.CanAddViewToSheet(doc, vs.Id, view.Id))
                     views.Add(viewType);
             }
 
             return views;
-        }
-
-        bool AceptadoPorViewSheet(View view)
-        {
-            if(view is ViewSheet || view is View3D)
-                return false;
-
-            return true;
         }
 
         List<string> GetViewsByViewType(string ViewType)
@@ -101,7 +94,7 @@ namespace Ex.Ex2
             foreach (Element element in viewsCollector)
             {
                 View view = element as View;
-                if (view != null && view.ViewType.ToString() == ViewType)
+                if (view != null && view.ViewType.ToString() == ViewType && Viewport.CanAddViewToSheet(doc, vs.Id, view.Id))
                 {
                     views.Add(view.Name);
                 }
@@ -122,25 +115,24 @@ namespace Ex.Ex2
             return null;
         }
 
+        public List<ElementId> GetViewSheets()
+        {
+            List<ElementId> vistasIds = new List<ElementId>();
+            foreach (CheckedListBox box in cbVistas)
+            {
+                foreach (int i in box.CheckedIndices)
+                    vistasIds.Add(GetViewByName(box.Items[i].ToString()).Id);
+            }
+
+            return vistasIds;
+        }
+
         int MAX_AREA = 20;
         void GenerateViewSheet()
         {
-            if(vs == null)
-            {
-                using (Transaction tx = new Transaction(doc, "Crear ViewSheet"))
-                {
-                    tx.Start();
-
-                    vs = ViewSheet.Create(doc, ElementId.InvalidElementId);
-                    vs.Name = "Planos Generales";
-
-                    tx.Commit();
-                }
-            }
-
             uiDoc.ActiveView = vs;
 
-            using (Transaction tx = new Transaction(doc, "Crear ViewPorts"))
+            using (Transaction tx = new Transaction(doc, "Generar ViewPorts"))
             {
                 tx.Start();
 
@@ -161,28 +153,32 @@ namespace Ex.Ex2
                 {
                     // Verificar el área del plano
                     View vista = doc.GetElement(vistaId) as View;
-                    BoundingBoxUV outline = vista.Outline;
-                    double area = (outline.Max.U - outline.Min.U) * (outline.Max.V - outline.Min.V);
-
-                    // Definir el factor de escala
-                    int scaleFactor = 100;
-                    if (area > MAX_AREA)
-                        scaleFactor = (int)Math.Round(Math.Sqrt(MAX_AREA / area) * 100);
 
                     if (Viewport.CanAddViewToSheet(doc, vs.Id, vistaId))
                     {
-                        int i = viewports.Count;
-                        ubi = new XYZ((i % 3) * 2, -((i / 3) * 2), 0);
+                        BoundingBoxUV outline = vista.Outline;
+                        double area = (outline.Max.U - outline.Min.U) * (outline.Max.V - outline.Min.V);
 
-                        Viewport vp = Viewport.Create(doc, vs.Id, vistaId, ubi);
+                        // Definir el factor de escala
+                        int scaleFactor = 100;
+                        if (area > MAX_AREA)
+                            scaleFactor = (int)Math.Round(Math.Sqrt(MAX_AREA / area) * 100);
+
                         if (scaleFactor != 100)
                             vista.Scale = scaleFactor;
+
+                        vista.Document.Regenerate();
+
+                        int i = viewports.Count;
+                        ubi = new XYZ((i % 3) * 2, -((i / 3) * 2), 0);                        
+
+                        Viewport vp = Viewport.Create(doc, vs.Id, vistaId, ubi);
 
                         viewports.Add(vp);
                     }
                 } 
-                
-                
+
+                vs.Document.Regenerate();
 
                 tx.Commit();
             }
@@ -190,7 +186,9 @@ namespace Ex.Ex2
 
         private void btViewSheet_Click(object sender, EventArgs e)
         {
-            GenerateViewSheet();
+            //GenerateViewSheet();
+            this.DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }
