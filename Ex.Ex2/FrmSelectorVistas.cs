@@ -19,11 +19,18 @@ namespace Ex.Ex2
 {
     public partial class FrmSelectorVistas : System.Windows.Forms.Form
     {
+        UIDocument uiDoc;
         Document doc;
         ICollection<Element> viewsCollector;
+        List<CheckedListBox> cbVistas = new List<CheckedListBox>();
+
+        ViewSheet vs;
+        List<Viewport> viewports = new List<Viewport>();
+
         public FrmSelectorVistas(UIDocument uiDoc)
         {
             InitializeComponent();
+            this.uiDoc = uiDoc;
             doc = uiDoc.Document;
             viewsCollector = new FilteredElementCollector(doc).OfClass(typeof(View)).ToElements();
         }
@@ -31,7 +38,6 @@ namespace Ex.Ex2
         private void FrmSelectorVistas_Load(object sender, EventArgs e)
         {
             GenerateComboBoxes();
-            //cbViews.DataSource = GetViews();
         }
 
         void GenerateComboBoxes()
@@ -40,17 +46,27 @@ namespace Ex.Ex2
             for(int i = 0; i < viewTypes.Count; i++)
             {
                 Label lb = new Label();
-                ComboBox cb = new ComboBox();
+                CheckedListBox cb = new CheckedListBox();
 
-                lb.Location = new Point(5, 50 * i + 5);
+                int column = 80 * (i / 2);
+                int row = 350 * (i % 2);
+
+                lb.Location = new Point(5 + row, column + 5);
                 lb.Size = new Size(300, 25);
                 lb.Text = viewTypes[i];
 
-                cb.Location = new Point(15, 50 * i + 26);
-                cb.Size = new Size(300, 15);
-                cb.DataSource = GetViewsByViewType(viewTypes[i]);
+                cb.Name = $"cb{viewTypes[i]}";
+                cb.Location = new Point(15 + row, column + 25);
+                cb.CheckOnClick = true;
+                cb.Size = new Size(300, 60);
+
+                foreach(string v in GetViewsByViewType(viewTypes[i]))
+                    cb.Items.Add(v);
+
+                cb.SetItemChecked(0, true);
 
                 Controls.Add(cb);
+                cbVistas.Add(cb);
                 Controls.Add(lb);
             }
         }
@@ -63,13 +79,19 @@ namespace Ex.Ex2
             {
                 View view = element as View;
                 string viewType = view.ViewType.ToString();
-                if (!views.Contains(viewType))
-                {
+                if (!views.Contains(viewType) && view.ViewType != ViewType.SystemBrowser)
                     views.Add(viewType);
-                }
             }
 
             return views;
+        }
+
+        bool AceptadoPorViewSheet(View view)
+        {
+            if(view is ViewSheet || view is View3D)
+                return false;
+
+            return true;
         }
 
         List<string> GetViewsByViewType(string ViewType)
@@ -90,8 +112,7 @@ namespace Ex.Ex2
 
         View GetViewByName(string name)
         {
-            ICollection<Element> elements = new FilteredElementCollector(doc).OfClass(typeof(View)).ToElements();
-            foreach (Element element in elements)
+            foreach (Element element in viewsCollector)
             {
                 View view = element as View;
                 if(view != null && view.Name == name)
@@ -101,31 +122,75 @@ namespace Ex.Ex2
             return null;
         }
 
-        void ShowViewPlan(View plan)
+        int MAX_AREA = 20;
+        void GenerateViewSheet()
         {
-            pbPlanoView.Image = GetViewImage(plan);
+            if(vs == null)
+            {
+                using (Transaction tx = new Transaction(doc, "Crear ViewSheet"))
+                {
+                    tx.Start();
+
+                    vs = ViewSheet.Create(doc, ElementId.InvalidElementId);
+                    vs.Name = "Planos Generales";
+
+                    tx.Commit();
+                }
+            }
+
+            uiDoc.ActiveView = vs;
+
+            using (Transaction tx = new Transaction(doc, "Crear ViewPorts"))
+            {
+                tx.Start();
+
+                List<ElementId> vistasIds = new List<ElementId>();
+                foreach (CheckedListBox box in cbVistas)
+                {
+                    foreach(int i in box.CheckedIndices)
+                        vistasIds.Add(GetViewByName(box.Items[i].ToString()).Id);
+                }
+                    
+
+                foreach(Viewport vp in viewports)
+                    vs.DeleteViewport(vp);
+                viewports.Clear();
+
+                XYZ ubi = new XYZ(0, 0, 0);
+                foreach (ElementId vistaId in vistasIds)
+                {
+                    // Verificar el área del plano
+                    View vista = doc.GetElement(vistaId) as View;
+                    BoundingBoxUV outline = vista.Outline;
+                    double area = (outline.Max.U - outline.Min.U) * (outline.Max.V - outline.Min.V);
+
+                    // Definir el factor de escala
+                    int scaleFactor = 100;
+                    if (area > MAX_AREA)
+                        scaleFactor = (int)Math.Round(Math.Sqrt(MAX_AREA / area) * 100);
+
+                    if (Viewport.CanAddViewToSheet(doc, vs.Id, vistaId))
+                    {
+                        int i = viewports.Count;
+                        ubi = new XYZ((i % 3) * 2, -((i / 3) * 2), 0);
+
+                        Viewport vp = Viewport.Create(doc, vs.Id, vistaId, ubi);
+                        if (scaleFactor != 100)
+                            vista.Scale = scaleFactor;
+
+                        viewports.Add(vp);
+                    }
+                } 
+                
+                
+
+                tx.Commit();
+            }
         }
 
-        Image GetViewImage(View view)
+        private void btViewSheet_Click(object sender, EventArgs e)
         {
-            View viewGraphics = doc.GetElement(view.GetTypeId()) as View;
-            XYZ origin = new XYZ(0,0,0);
-            XYZ viewDir = new XYZ(0,0,1);
-
-            ViewOrientation3D viewOri = new ViewOrientation3D(origin,viewDir, new XYZ(0,1,0));
-            BoundingBoxXYZ crop = view.CropBox;
-
-            ImageExportOptions opts = new ImageExportOptions();
-            opts.FilePath = "C:\\";
-            opts.ZoomType = ZoomFitType.FitToPage;
-            opts.FitDirection = FitDirectionType.Horizontal;
-            opts.PixelSize = 100;
-
-            doc.ExportImage(opts);
-            Image img = Image.FromFile(opts.FilePath);
-            File.Delete(opts.FilePath);
-
-            return img;
+            GenerateViewSheet();
         }
     }
 }

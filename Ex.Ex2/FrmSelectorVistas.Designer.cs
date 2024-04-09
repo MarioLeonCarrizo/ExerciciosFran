@@ -28,46 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pbPlanoView = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.pbPlanoView)).BeginInit();
+            this.btViewSheet = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // pbPlanoView
+            // btViewSheet
             // 
-            this.pbPlanoView.BackColor = System.Drawing.SystemColors.ButtonShadow;
-            this.pbPlanoView.Location = new System.Drawing.Point(371, 12);
-            this.pbPlanoView.Name = "pbPlanoView";
-            this.pbPlanoView.Size = new System.Drawing.Size(566, 426);
-            this.pbPlanoView.TabIndex = 1;
-            this.pbPlanoView.TabStop = false;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(371, 444);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(109, 31);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "View Image";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btViewSheet.Location = new System.Drawing.Point(771, 12);
+            this.btViewSheet.Name = "btViewSheet";
+            this.btViewSheet.Size = new System.Drawing.Size(109, 31);
+            this.btViewSheet.TabIndex = 2;
+            this.btViewSheet.Text = "View Image";
+            this.btViewSheet.UseVisualStyleBackColor = true;
+            this.btViewSheet.Click += new System.EventHandler(this.btViewSheet_Click);
             // 
             // FrmSelectorVistas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(949, 487);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.pbPlanoView);
+            this.ClientSize = new System.Drawing.Size(890, 487);
+            this.Controls.Add(this.btViewSheet);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FrmSelectorVistas";
             this.Text = "FrmSelectorVistas";
             this.Load += new System.EventHandler(this.FrmSelectorVistas_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pbPlanoView)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.PictureBox pbPlanoView;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btViewSheet;
     }
 }
