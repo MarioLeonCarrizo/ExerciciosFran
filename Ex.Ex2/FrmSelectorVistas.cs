@@ -39,6 +39,7 @@ namespace Ex.Ex2
         private void FrmSelectorVistas_Load(object sender, EventArgs e)
         {
             GenerateComboBoxes();
+            this.Size = new Size(Size.Width, 150 + ( 75 * ((cbVistas.Count-1) / 2)));
         }
 
         void GenerateComboBoxes()
@@ -189,6 +190,17 @@ namespace Ex.Ex2
             //GenerateViewSheet();
             this.DialogResult = DialogResult.OK;
             Close();
+        }
+
+        private void btSelectAll_Click(object sender, EventArgs e)
+        {
+            foreach(CheckedListBox cb in cbVistas)
+            {
+                for(int i = 0; i < cb.Items.Count; i++)
+                {
+                    cb.SetItemChecked(i, true);
+                }
+            }
         }
     }
 }

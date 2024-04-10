@@ -34,6 +34,8 @@
     <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="RevitAPI">
       <HintPath>..\..\cbb\exc\RevitAPI.dll</HintPath>
     </Reference>
@@ -43,20 +45,24 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\RegisterMoveObjectCommand.cs" />
     <Compile Include="Commands\ViewSelectorCommand.cs" />
     <Compile Include="Commands\MoveObjectCommand.cs" />
     <Compile Include="CoreAssembly.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\RemoveParamsCommand.cs" />
+    <Compile Include="View Model\MoveObjectManagerMainPage.cs" />
     <Compile Include="View Model\ViewModelManager.cs" />
   </ItemGroup>
   <ItemGroup>

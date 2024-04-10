@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Interop;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Ex.Ex2;
@@ -43,8 +45,7 @@ namespace Ex.Core
 
             return Result.Succeeded;
         }
-
-        int MAX_AREA = 20;
+        string InfoViews;
         void GenerateViewSheet(UIDocument uiDoc, ViewSheet vs, List<ElementId> vistasIds)
         {
             uiDoc.ActiveView = vs;
@@ -53,37 +54,54 @@ namespace Ex.Core
             {
                 tx.Start();
 
-                XYZ ubi = new XYZ(0, 0, 0);
+                int rows = (int)Math.Round(Math.Sqrt(vistasIds.Count));
                 for(int i =0;  i < vistasIds.Count; i++)
                 {
-                    // Verificar el área del plano
-                    View vista = uiDoc.Document.GetElement(vistasIds[i]) as View;
-
                     if (Viewport.CanAddViewToSheet(uiDoc.Document, vs.Id, vistasIds[i]))
                     {
-                        BoundingBoxUV outline = vista.Outline;
-                        double area = (outline.Max.U - outline.Min.U) * (outline.Max.V - outline.Min.V);
+                        View vista = uiDoc.Document.GetElement(vistasIds[i]) as View;
+                        XYZ ubi = new XYZ((i % rows) * 2.5f, -((i / rows) * 2.5f), 0);
 
-                        // Definir el factor de escala
-                        int scaleFactor = 100;
-                        if (area > MAX_AREA)
-                            scaleFactor = (int)Math.Round(Math.Sqrt(MAX_AREA / area) * 100);
-
-                        if (scaleFactor != 100)
-                            vista.Scale = scaleFactor;
-
-                        vista.Document.Regenerate();
-
-                        ubi = new XYZ((i % 3) * 2, -((i / 3) * 2), 0);
-
-                        Viewport vp = Viewport.Create(uiDoc.Document, vs.Id, vistasIds[i], ubi);
+                        CreateViewPort(uiDoc.Document, vs, vista, ubi);
                     }
                 }
 
                 vs.Document.Regenerate();
 
+                var textNoteOptions = new TextNoteOptions
+                {
+                    VerticalAlignment = VerticalTextAlignment.Top,
+                    HorizontalAlignment = HorizontalTextAlignment.Left,
+                    TypeId = new FilteredElementCollector(uiDoc.Document).OfClass(typeof(TextElementType)).FirstOrDefault().Id,
+                };
+
+                var textNote = TextNote.Create(uiDoc.Document, uiDoc.ActiveView.Id, new XYZ(-2, 0, 0), InfoViews, textNoteOptions);
+
                 tx.Commit();
             }
+        }
+
+        int MAX_AREA = 2;
+        void CreateViewPort(Document doc, ViewSheet vs, View vista, XYZ ubi)
+        {
+            BoundingBoxUV outline = vista.Outline;
+            double area = (outline.Max.U - outline.Min.U) * (outline.Max.V - outline.Min.V);
+
+            double scaleFactor = 100;
+            if (area > MAX_AREA)
+                scaleFactor = Math.Round(Math.Sqrt(area / MAX_AREA)) * 100;
+
+            scaleFactor = Math.Min(150, Math.Max(75, scaleFactor));
+
+            if (scaleFactor != 100 && vista.Scale != 0)
+                vista.Scale = (int)scaleFactor;
+
+            vista.Document.Regenerate();
+
+            Viewport vp = Viewport.Create(doc, vs.Id, vista.Id, ubi);
+            outline = vista.Outline;
+            area = (outline.Max.U - outline.Min.U) * (outline.Max.V - outline.Min.V);
+            InfoViews += $"{vista.Name} \t-\t {area} \t-\t {vista.Scale} \n";
         }
 
         public static string GetPath()
@@ -91,5 +109,12 @@ namespace Ex.Core
             // Return constructed namespace path.
             return typeof(ViewSelectorCommand).Namespace + "." + nameof(ViewSelectorCommand);
         }
+    }
+
+    public class viewPortLayerData
+    {
+        public string Name { get; set; }
+        public double Area { get; set; }
+        public int Scale { get; set; }
     }
 }

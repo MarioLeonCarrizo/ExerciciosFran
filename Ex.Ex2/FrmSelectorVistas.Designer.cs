@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.btViewSheet = new System.Windows.Forms.Button();
+            this.btSelectAll = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btViewSheet
@@ -41,12 +42,23 @@
             this.btViewSheet.UseVisualStyleBackColor = true;
             this.btViewSheet.Click += new System.EventHandler(this.btViewSheet_Click);
             // 
+            // btSelectAll
+            // 
+            this.btSelectAll.Location = new System.Drawing.Point(731, 49);
+            this.btSelectAll.Name = "btSelectAll";
+            this.btSelectAll.Size = new System.Drawing.Size(75, 23);
+            this.btSelectAll.TabIndex = 3;
+            this.btSelectAll.Text = "Select All";
+            this.btSelectAll.UseVisualStyleBackColor = true;
+            this.btSelectAll.Click += new System.EventHandler(this.btSelectAll_Click);
+            // 
             // FrmSelectorVistas
             // 
             this.AcceptButton = this.btViewSheet;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 563);
+            this.Controls.Add(this.btSelectAll);
             this.Controls.Add(this.btViewSheet);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -59,5 +71,6 @@
 
         #endregion
         private System.Windows.Forms.Button btViewSheet;
+        private System.Windows.Forms.Button btSelectAll;
     }
 }

@@ -6,17 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Ex.Core.View_Model
+namespace Ex.Core
 {
-
     public class BaseViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
 
-        public void OnPropertyChanged(string name)
-        {
-            PropertyChanged(this, new PropertyChangedEventArgs(name));
-        }
+        public void OnPropertyChanged(string name) => PropertyChanged(this, new PropertyChangedEventArgs(name));
     }
 
     public class FamilyManagerMainPageViewModel : BaseViewModel
@@ -46,19 +42,8 @@ namespace Ex.Core.View_Model
         private Action mAction = null;
         public event EventHandler CanExecuteChanged = (sender, e) => { };
 
-        public RouteCommands(Action action)
-        {
-            mAction = action;
-        }
-
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-        public void Execute(object parameter)
-        {
-            mAction();
-        }
+        public RouteCommands(Action action) => mAction = action;
+        public bool CanExecute(object parameter) { return true; }
+        public void Execute(object parameter) => mAction();
     }
 }
