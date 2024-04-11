@@ -29,6 +29,11 @@ namespace Ex.Ex2
 
         bool selectAll = true;
 
+        /// <summary>
+        /// Constructor del formulario.
+        /// </summary>
+        /// <param name="uiDoc">UIDocument actual en Revit.</param>
+        /// <param name="xvs">ViewSheet a la que se agregarán las vistas seleccionadas.</param>
         public FrmSelectorVistas(UIDocument uiDoc, ViewSheet xvs)
         {
             InitializeComponent();
@@ -44,6 +49,9 @@ namespace Ex.Ex2
             this.Size = new Size(Size.Width, 150 + ( 75 * ((cbVistas.Count-1) / 2)));
         }
 
+        /// <summary>
+        /// Genera los ComboBoxes y CheckedListBoxes para cada tipo de vista disponible.
+        /// </summary>
         void GenerateComboBoxes()
         {
             List<string> viewTypes = GetViewTypes();
@@ -62,7 +70,7 @@ namespace Ex.Ex2
                 
                 cb.Location = new Point(300 + row, column);
                 cb.Size = new Size(23, 23);
-                cb.Text = $"{i}";
+                cb.Text = $"cb{viewTypes[i]}";
                 cb.Click += SelectAllList;
 
                 clb.Name = $"cb{viewTypes[i]}";
@@ -82,11 +90,26 @@ namespace Ex.Ex2
             }
         }
 
+        /// <summary>
+        /// Maneja el evento Click de los CheckBoxes para seleccionar o deseleccionar todos los items de los CheckedListBoxes correspondientes.
+        /// </summary>
+        /// <param name="sender">CheckBox que disparó el evento.</param>
+        /// <param name="e">Argumentos del evento.</param>
         void SelectAllList(object sender, EventArgs e)
         {
-            
+            CheckBox cb = sender as CheckBox;
+            if (cb != null)
+            {
+                CheckedListBox clb = cbVistas.First(x => x.Name.Contains(cb.Text));
+                for (int i = 0; i < clb.Items.Count; i++)
+                    clb.SetItemChecked(i, cb.Checked);
+            }
         }
 
+        /// <summary>
+        /// Obtiene una lista de todos los tipos de vista compatibles con la ViewSheet.
+        /// </summary>
+        /// <returns>Lista de tipos de vista.</returns>
         List<string> GetViewTypes()
         {
             List<string> views = new List<string>();
@@ -102,6 +125,11 @@ namespace Ex.Ex2
             return views;
         }
 
+        /// <summary>
+        /// Obtiene una lista de vistas según el tipo de vista especificado.
+        /// </summary>
+        /// <param name="ViewType">El tipo de vista a filtrar.</param>
+        /// <returns>Lista de nombres de vistas del tipo especificado.</returns>
         List<string> GetViewsByViewType(string ViewType)
         {
             List<string> views = new List<string>();
@@ -118,6 +146,11 @@ namespace Ex.Ex2
             return views;
         }
 
+        /// <summary>
+        /// Obtiene una vista según su nombre.
+        /// </summary>
+        /// <param name="name">Nombre de la vista.</param>
+        /// <returns>Vista correspondiente al nombre especificado.</returns>
         View GetViewByName(string name)
         {
             foreach (Element element in viewsCollector)
@@ -130,6 +163,10 @@ namespace Ex.Ex2
             return null;
         }
 
+        /// <summary>
+        /// Obtiene los ElementId de las vistas seleccionadas para agregar a la ViewSheet.
+        /// </summary>
+        /// <returns>Lista de ElementId de vistas seleccionadas.</returns>
         public List<ElementId> GetViewSheets()
         {
             List<ElementId> vistasIds = new List<ElementId>();

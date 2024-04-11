@@ -40,12 +40,19 @@ namespace Ex.Core
                 if (window.DialogResult == DialogResult.Cancel)
                     return Result.Cancelled;
 
+                // Generar la hoja de vistas con las vistas seleccionadas
                 GenerateViewSheet(uidoc, vs, window.GetViewSheets());
             }
 
             return Result.Succeeded;
         }
         string InfoViews;
+        /// <summary>
+        /// Genera la hoja de vistas con los viewports correspondientes.
+        /// </summary>
+        /// <param name="uiDoc">UIDocument activo.</param>
+        /// <param name="vs">Hojas de vistas generada</param>
+        /// <param name="vistasIds">Lista de IDs de vistas seleccionadas.</param>
         void GenerateViewSheet(UIDocument uiDoc, ViewSheet vs, List<ElementId> vistasIds)
         {
             uiDoc.ActiveView = vs;
@@ -82,6 +89,13 @@ namespace Ex.Core
         }
 
         int MAX_AREA = 2;
+        /// <summary>
+        /// Crea un viewport en la hoja de vistas.
+        /// </summary>
+        /// <param name="doc">Documento activo.</param>
+        /// <param name="vs">Hojas de vistas.</param>
+        /// <param name="vista">Vista a añadir al viewport.</param>
+        /// <param name="ubi">Ubicación del viewport.</param>
         void CreateViewPort(Document doc, ViewSheet vs, View vista, XYZ ubi)
         {
             BoundingBoxUV outline = vista.Outline;
@@ -101,7 +115,7 @@ namespace Ex.Core
             Viewport vp = Viewport.Create(doc, vs.Id, vista.Id, ubi);
             outline = vista.Outline;
             area = (outline.Max.U - outline.Min.U) * (outline.Max.V - outline.Min.V);
-            InfoViews += $"{vista.Name} \t-\t {area} \t-\t {vista.Scale} \n";
+            InfoViews += $"{vista.Name,-60}\t-\t{area,-10}\t-\t{vista.Scale} \n";
         }
 
         public static string GetPath()
