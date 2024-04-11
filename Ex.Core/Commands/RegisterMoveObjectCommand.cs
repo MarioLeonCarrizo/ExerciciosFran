@@ -30,7 +30,7 @@ namespace Ex.Core
             };
 
             var dpid = new DockablePaneId(new Guid("E646DEBC-798E-429E-88DE-BD3270DCDD76"));
-            uIApplication.RegisterDockablePane(dpid, "Family Manager", managerPage as IDockablePaneProvider);
+            uIApplication.RegisterDockablePane(dpid, "Move Object Manager", managerPage as IDockablePaneProvider);
 
             return Result.Succeeded;
         }

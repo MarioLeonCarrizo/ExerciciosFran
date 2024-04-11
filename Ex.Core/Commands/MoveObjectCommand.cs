@@ -23,7 +23,7 @@ namespace Ex.Core
 
             var dpid = new DockablePaneId(new Guid("E646DEBC-798E-429E-88DE-BD3270DCDD76"));
             var dp = commandData.Application.GetDockablePane(dpid);
-            dp.Show();
+            //dp.Show();
 
             return Result.Succeeded;
         }

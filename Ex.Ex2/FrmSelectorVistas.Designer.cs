@@ -44,9 +44,9 @@
             // 
             // btSelectAll
             // 
-            this.btSelectAll.Location = new System.Drawing.Point(731, 49);
+            this.btSelectAll.Location = new System.Drawing.Point(716, 49);
             this.btSelectAll.Name = "btSelectAll";
-            this.btSelectAll.Size = new System.Drawing.Size(75, 23);
+            this.btSelectAll.Size = new System.Drawing.Size(109, 23);
             this.btSelectAll.TabIndex = 3;
             this.btSelectAll.Text = "Select All";
             this.btSelectAll.UseVisualStyleBackColor = true;

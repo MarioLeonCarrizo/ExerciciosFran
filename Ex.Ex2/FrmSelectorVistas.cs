@@ -27,6 +27,8 @@ namespace Ex.Ex2
         ViewSheet vs;
         List<Viewport> viewports = new List<Viewport>();
 
+        bool selectAll = true;
+
         public FrmSelectorVistas(UIDocument uiDoc, ViewSheet xvs)
         {
             InitializeComponent();
@@ -48,29 +50,41 @@ namespace Ex.Ex2
             for(int i = 0; i < viewTypes.Count; i++)
             {
                 Label lb = new Label();
-                CheckedListBox cb = new CheckedListBox();
+                CheckedListBox clb = new CheckedListBox();
+                CheckBox cb = new CheckBox();
 
                 int column = 80 * (i / 2);
                 int row = 350 * (i % 2);
 
                 lb.Location = new Point(5 + row, column + 5);
-                lb.Size = new Size(300, 25);
+                lb.Size = new Size(170, 25);
                 lb.Text = viewTypes[i];
+                
+                cb.Location = new Point(300 + row, column);
+                cb.Size = new Size(23, 23);
+                cb.Text = $"{i}";
+                cb.Click += SelectAllList;
 
-                cb.Name = $"cb{viewTypes[i]}";
-                cb.Location = new Point(15 + row, column + 25);
-                cb.CheckOnClick = true;
-                cb.Size = new Size(300, 60);
+                clb.Name = $"cb{viewTypes[i]}";
+                clb.Location = new Point(15 + row, column + 25);
+                clb.CheckOnClick = true;
+                clb.Size = new Size(300, 60);
 
                 foreach(string v in GetViewsByViewType(viewTypes[i]))
-                    cb.Items.Add(v);
+                    clb.Items.Add(v);
 
-                cb.SetItemChecked(0, true);
+                clb.SetItemChecked(0, true);
 
-                Controls.Add(cb);
-                cbVistas.Add(cb);
+                Controls.Add(clb);
+                cbVistas.Add(clb);
                 Controls.Add(lb);
+                Controls.Add(cb);
             }
+        }
+
+        void SelectAllList(object sender, EventArgs e)
+        {
+            
         }
 
         List<string> GetViewTypes()
@@ -128,79 +142,27 @@ namespace Ex.Ex2
             return vistasIds;
         }
 
-        int MAX_AREA = 20;
-        void GenerateViewSheet()
-        {
-            uiDoc.ActiveView = vs;
-
-            using (Transaction tx = new Transaction(doc, "Generar ViewPorts"))
-            {
-                tx.Start();
-
-                List<ElementId> vistasIds = new List<ElementId>();
-                foreach (CheckedListBox box in cbVistas)
-                {
-                    foreach(int i in box.CheckedIndices)
-                        vistasIds.Add(GetViewByName(box.Items[i].ToString()).Id);
-                }
-                    
-
-                foreach(Viewport vp in viewports)
-                    vs.DeleteViewport(vp);
-                viewports.Clear();
-
-                XYZ ubi = new XYZ(0, 0, 0);
-                foreach (ElementId vistaId in vistasIds)
-                {
-                    // Verificar el área del plano
-                    View vista = doc.GetElement(vistaId) as View;
-
-                    if (Viewport.CanAddViewToSheet(doc, vs.Id, vistaId))
-                    {
-                        BoundingBoxUV outline = vista.Outline;
-                        double area = (outline.Max.U - outline.Min.U) * (outline.Max.V - outline.Min.V);
-
-                        // Definir el factor de escala
-                        int scaleFactor = 100;
-                        if (area > MAX_AREA)
-                            scaleFactor = (int)Math.Round(Math.Sqrt(MAX_AREA / area) * 100);
-
-                        if (scaleFactor != 100)
-                            vista.Scale = scaleFactor;
-
-                        vista.Document.Regenerate();
-
-                        int i = viewports.Count;
-                        ubi = new XYZ((i % 3) * 2, -((i / 3) * 2), 0);                        
-
-                        Viewport vp = Viewport.Create(doc, vs.Id, vistaId, ubi);
-
-                        viewports.Add(vp);
-                    }
-                } 
-
-                vs.Document.Regenerate();
-
-                tx.Commit();
-            }
-        }
-
         private void btViewSheet_Click(object sender, EventArgs e)
         {
-            //GenerateViewSheet();
             this.DialogResult = DialogResult.OK;
             Close();
         }
 
         private void btSelectAll_Click(object sender, EventArgs e)
         {
+
             foreach(CheckedListBox cb in cbVistas)
             {
                 for(int i = 0; i < cb.Items.Count; i++)
                 {
-                    cb.SetItemChecked(i, true);
+                    cb.SetItemChecked(i, selectAll);
                 }
             }
+            selectAll = !selectAll;
+            if (!selectAll)
+                btSelectAll.Text = "Unselect All";
+            else
+                btSelectAll.Text = "Select All";
         }
     }
 }
