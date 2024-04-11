@@ -48,7 +48,7 @@ namespace Ex.Core
         }
         string InfoViews;
         /// <summary>
-        /// Genera la hoja de vistas con los viewports correspondientes.
+        /// Genera la hoja de vistas ("T:Autodesk.Revit.DB.View") con los viewports correspondientes.
         /// </summary>
         /// <param name="uiDoc">UIDocument activo.</param>
         /// <param name="vs">Hojas de vistas generada</param>
@@ -90,7 +90,7 @@ namespace Ex.Core
 
         int MAX_AREA = 2;
         /// <summary>
-        /// Crea un viewport en la hoja de vistas.
+        /// Crea un viewport de la <paramref name="vista"/> en la <see cref="ViewSheet"/> generada.
         /// </summary>
         /// <param name="doc">Documento activo.</param>
         /// <param name="vs">Hojas de vistas.</param>

@@ -30,10 +30,10 @@ namespace Ex.Ex2
         bool selectAll = true;
 
         /// <summary>
-        /// Constructor del formulario.
+        /// Constructor del <see cref="Form"/>.
         /// </summary>
         /// <param name="uiDoc">UIDocument actual en Revit.</param>
-        /// <param name="xvs">ViewSheet a la que se agregarán las vistas seleccionadas.</param>
+        /// <param name="xvs"><see cref="ViewSheet"/> a la que se agregarán las vistas seleccionadas.</param>
         public FrmSelectorVistas(UIDocument uiDoc, ViewSheet xvs)
         {
             InitializeComponent();
@@ -50,7 +50,7 @@ namespace Ex.Ex2
         }
 
         /// <summary>
-        /// Genera los ComboBoxes y CheckedListBoxes para cada tipo de vista disponible.
+        /// Genera los <see cref="ComboBox"/> y <see cref="CheckedListBox"/> para cada tipo de <see cref="View"/> disponible.
         /// </summary>
         void GenerateComboBoxes()
         {
@@ -91,7 +91,7 @@ namespace Ex.Ex2
         }
 
         /// <summary>
-        /// Maneja el evento Click de los CheckBoxes para seleccionar o deseleccionar todos los items de los CheckedListBoxes correspondientes.
+        /// Maneja el evento Click de los <see cref="CheckBox"/> para seleccionar o deseleccionar todos los items de los <see cref="CheckedListBox"/> correspondientes.
         /// </summary>
         /// <param name="sender">CheckBox que disparó el evento.</param>
         /// <param name="e">Argumentos del evento.</param>
@@ -107,7 +107,7 @@ namespace Ex.Ex2
         }
 
         /// <summary>
-        /// Obtiene una lista de todos los tipos de vista compatibles con la ViewSheet.
+        /// Obtiene una lista de todos los tipos de <see cref="View"/> compatibles con la <see cref="ViewSheet"/>.
         /// </summary>
         /// <returns>Lista de tipos de vista.</returns>
         List<string> GetViewTypes()
@@ -126,7 +126,7 @@ namespace Ex.Ex2
         }
 
         /// <summary>
-        /// Obtiene una lista de vistas según el tipo de vista especificado.
+        /// Obtiene una lista de <see cref="View"/> según el <see langword="string"/> <paramref name="ViewType"/>.
         /// </summary>
         /// <param name="ViewType">El tipo de vista a filtrar.</param>
         /// <returns>Lista de nombres de vistas del tipo especificado.</returns>
@@ -147,7 +147,7 @@ namespace Ex.Ex2
         }
 
         /// <summary>
-        /// Obtiene una vista según su nombre.
+        /// Obtiene una <see cref="View"/> según el <paramref name="name"/>.
         /// </summary>
         /// <param name="name">Nombre de la vista.</param>
         /// <returns>Vista correspondiente al nombre especificado.</returns>
@@ -164,7 +164,7 @@ namespace Ex.Ex2
         }
 
         /// <summary>
-        /// Obtiene los ElementId de las vistas seleccionadas para agregar a la ViewSheet.
+        /// Obtiene los <see cref="Autodesk.Revit.DB.ElementId"/> de las <see cref="View"/> seleccionadas para agregar a la <see cref="ViewSheet"/>.
         /// </summary>
         /// <returns>Lista de ElementId de vistas seleccionadas.</returns>
         public List<ElementId> GetViewSheets()
