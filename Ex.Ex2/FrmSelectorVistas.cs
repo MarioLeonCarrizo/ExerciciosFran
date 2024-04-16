@@ -166,7 +166,7 @@ namespace Ex.Ex2
         /// <summary>
         /// Obtiene los <see cref="Autodesk.Revit.DB.ElementId"/> de las <see cref="View"/> seleccionadas para agregar a la <see cref="ViewSheet"/>.
         /// </summary>
-        /// <returns>Lista de ElementId de vistas seleccionadas.</returns>
+        /// <returns>Lista de <see cref="Autodesk.Revit.DB.ElementId"/> de vistas seleccionadas.</returns>
         public List<ElementId> GetViewSheets()
         {
             List<ElementId> vistasIds = new List<ElementId>();

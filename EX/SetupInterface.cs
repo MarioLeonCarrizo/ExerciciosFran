@@ -21,6 +21,7 @@ namespace Ex
             // Create ribbon panels
             var panelEx1 = app.CreateRibbonPanel(tabName, "Ex1");
             var panelEx2 = app.CreateRibbonPanel(tabName, "Ex2");
+            var panelEx3 = app.CreateRibbonPanel(tabName, "Ex3");
             var panelTest1 = app.CreateRibbonPanel(tabName, "Test1");
 
             // -------------- EX1 -------------- //
@@ -34,6 +35,12 @@ namespace Ex
                                                         "Descripcion", ViewSelectorCommand.GetPath(),
                                                         "32_px.png", "windows_128_px.png");
             var bt2 = btEx2.Create();
+
+            // -------------- EX3 -------------- //
+            RevitPushButton btEx3 = new RevitPushButton("Obtener Medidas\nArchivo CAD", panelEx3,
+                                                        "Descripcion", ViewInformationCADCommand.GetPath(),
+                                                        "32_px.png", "windows_128_px.png");
+            var bt3 = btEx3.Create();
 
             // -------------- TEST1 -------------- //
             RevitPushButton btTest1 = new RevitPushButton("Mover Objeto Seleccionado", panelTest1,

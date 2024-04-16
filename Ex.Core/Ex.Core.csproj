@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\RegisterMoveObjectCommand.cs" />
+    <Compile Include="Commands\ViewInformationCADCommand.cs" />
     <Compile Include="Commands\ViewSelectorCommand.cs" />
     <Compile Include="Commands\MoveObjectCommand.cs" />
     <Compile Include="CoreAssembly.cs" />
