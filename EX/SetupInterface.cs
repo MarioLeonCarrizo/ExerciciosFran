@@ -22,6 +22,7 @@ namespace Ex
             var panelEx1 = app.CreateRibbonPanel(tabName, "Ex1");
             var panelEx2 = app.CreateRibbonPanel(tabName, "Ex2");
             var panelEx3 = app.CreateRibbonPanel(tabName, "Ex3");
+            var panelEx4 = app.CreateRibbonPanel(tabName, "Ex4");
             var panelTest1 = app.CreateRibbonPanel(tabName, "Test1");
 
             // -------------- EX1 -------------- //
@@ -41,6 +42,11 @@ namespace Ex
                                                         "Descripcion", ViewInformationCADCommand.GetPath(),
                                                         "32_px.png", "windows_128_px.png");
             var bt3 = btEx3.Create();
+            // -------------- EX4 -------------- //
+            RevitPushButton btEx4 = new RevitPushButton("Generar Casa\nArchivo CAD", panelEx4,
+                                                        "Descripcion", GenerateHouseWithCADPlan.GetPath(),
+                                                        "32_px.png", "windows_128_px.png");
+            var bt4 = btEx4.Create();
 
             // -------------- TEST1 -------------- //
             RevitPushButton btTest1 = new RevitPushButton("Mover Objeto Seleccionado", panelTest1,
