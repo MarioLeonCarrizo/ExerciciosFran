@@ -1,13 +1,17 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using Autodesk.Revit.UI;
+using Ex.Ex2;
+using Ex.Ex3;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Shapes;
 using static System.Windows.Forms.LinkLabel;
 using Line = Autodesk.Revit.DB.Line;
@@ -18,85 +22,65 @@ namespace Ex.Core
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
     public class GenerateHouseWithCADPlan : IExternalCommand
     {
+        WallType wallType = null;
+        FamilySymbol doorType = null;
         List<Curve> curves = new List<Curve>();
+
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             var uidoc = commandData.Application.ActiveUIDocument;
             var doc = uidoc.Document;
 
-            using (Transaction tx = new Transaction(doc, "Generar ViewPorts"))
-            {
-                tx.Start();
-
-                var textNoteOptions = new TextNoteOptions
-                {
-                    VerticalAlignment = VerticalTextAlignment.Top,
-                    HorizontalAlignment = HorizontalTextAlignment.Left,
-                    TypeId = new FilteredElementCollector(doc).OfClass(typeof(TextElementType)).FirstOrDefault().Id,
-                };
-
-                var textNote = TextNote.Create(doc, uidoc.ActiveView.Id, new XYZ(0, -1, 0), ObtenerInformacionCAD(doc), textNoteOptions);
-
-                tx.Commit();
-            }
-            Element wallType = new FilteredElementCollector(doc).OfClass(typeof(WallType)).FirstOrDefault(x => x.Name == "Genérico - 300 mm");
-            FamilySymbol doorType = new FilteredElementCollector(doc).OfClass(typeof(FamilySymbol))
-                                                                     .OfCategory(BuiltInCategory.OST_Doors)
-                                                                     .OfType<FamilySymbol>()
-                                                                     .FirstOrDefault(x => x.Name == "0915 x 2134mm");
-
             curves = ObtenerCurve(doc);
-            List<Wall> walls = CreateWalls(doc, SimplifyListLines(GetLines(curves)), wallType as WallType, GetLevelByName(doc, doc.ActiveView.Name));
-            CreateDoors(doc, GetArcs(curves), walls, doorType, GetLevelByName(doc, doc.ActiveView.Name));
 
-            return Result.Succeeded;
-        }
-
-        string ObtenerInformacionCAD(Document doc)
-        {
-            string InfoViews = "";
-            // Obtener todos los elementos importados de CAD en el documento
-            FilteredElementCollector collector = new FilteredElementCollector(doc);
-            ICollection<Element> importedCADs = collector.OfClass(typeof(CurveElement)).ToElements();
-
-            foreach (CurveElement importedCAD in importedCADs)
+            if(curves.Count == 0)
             {
-                if (importedCAD.Location is LocationCurve locationCurve)
+                Message.Display("No hay lineas en la vista actual", WindowType.Warning);
+                return Result.Cancelled;
+            }
+
+            
+
+            using (var window = new FrmSelectWalls(doc))
+            {
+                window.ShowDialog();
+
+                if (window.DialogResult == DialogResult.Cancel)
+                    return Result.Cancelled;
+
+                wallType = window.GetWall();
+                doorType = window.GetDoor();
+                //doc.LoadFamilySymbol("C:\\.rfa", doorType.Name);
+
+                if(window.CreateCheckNote())
                 {
-                    Curve curve = locationCurve.Curve;
-                    // Accedemos a la informacion
-                    XYZ startPoint = curve.GetEndPoint(0);
-                    XYZ endPoint = curve.GetEndPoint(1);
-                    double length = curve.Length;
-
-                    // Redondea los resultados
-                    startPoint = new XYZ(Math.Round(startPoint.X, 3), Math.Round(startPoint.Y, 3), Math.Round(startPoint.Z, 3));
-                    endPoint = new XYZ(Math.Round(endPoint.X, 3), Math.Round(endPoint.Y, 3), Math.Round(endPoint.Z, 3));
-                    length = Math.Round(length, 3);
-
-                    if (curve is Line line)
+                    using (Transaction tx = new Transaction(doc, "Generar Text Note"))
                     {
-                        InfoViews += $"Line Wall: Start Point: {{{startPoint.X,-7}\t-\t{startPoint.Y,-7}}}  " +
-                                     $"\t  |\tEnd Point: {{{endPoint.X,-7}\t-\t{endPoint.Y,-7}}}  " +
-                                     $"\t  |\tLenght: {length}  " +
-                                     $"\t  |\tDirection: {Math.Round(line.Direction.X, 1)},{Math.Round(line.Direction.Y, 1)}\n";
-                    }
-                    else if (curve is Arc arc)
-                    {
-                        InfoViews += $"Line Door: Start Point: {{{startPoint.X,-7}\t-\t{startPoint.Y,-7}}}  " +
-                                     $"\t  |\tEnd Point: {{{endPoint.X,-7}\t-\t{endPoint.Y,-7}}}  " +
-                                     $"\t  |\tLenght: {length} \n";
+                        tx.Start();
+
+                        var textNoteOptions = new TextNoteOptions
+                        {
+                            VerticalAlignment = VerticalTextAlignment.Top,
+                            HorizontalAlignment = HorizontalTextAlignment.Left,
+                            TypeId = new FilteredElementCollector(doc).OfClass(typeof(TextElementType)).FirstOrDefault().Id,
+                        };
+
+                        var textNote = TextNote.Create(doc, uidoc.ActiveView.Id, new XYZ(0, -1, 0), ObtenerInformacionCAD(curves), textNoteOptions);
+
+                        tx.Commit();
                     }
                 }
             }
 
-            return InfoViews;
+            List<Wall> walls = CreateWalls(doc, SimplifyListLines(GetLines(curves)), GetLevelByName(doc, doc.ActiveView.Name));
+            CreateDoors(doc, GetArcs(curves), walls, GetLevelByName(doc, doc.ActiveView.Name));
+
+            return Result.Succeeded;
         }
 
         List<Curve> ObtenerCurve(Document doc)
         {
             List<Curve> curves = new List<Curve>();
-            // Obtener todos los elementos importados de CAD en el documento
             FilteredElementCollector collector = new FilteredElementCollector(doc);
             ICollection<Element> importedCADs = collector.OfClass(typeof(CurveElement)).ToElements();
 
@@ -113,13 +97,41 @@ namespace Ex.Core
             return curves;
         }
 
+        string ObtenerInformacionCAD(List<Curve> curvesCAD)
+        {
+            string InfoViews = "";
+            foreach (Curve curve in curvesCAD)
+            {
+                // Accedemos a la informacion
+                XYZ startPoint = curve.GetEndPoint(0);
+                XYZ endPoint = curve.GetEndPoint(1);
+                double length = curve.Length;
+
+                // Redondea los resultados
+                startPoint = new XYZ(Math.Round(startPoint.X, 3), Math.Round(startPoint.Y, 3), Math.Round(startPoint.Z, 3));
+                endPoint = new XYZ(Math.Round(endPoint.X, 3), Math.Round(endPoint.Y, 3), Math.Round(endPoint.Z, 3));
+                length = Math.Round(length, 3);
+
+                if (curve is Line line)
+                    InfoViews += $"Line Wall: ";
+                else if (curve is Arc arc)
+                    InfoViews += $"Line Door: ";
+
+                InfoViews += $"Start Point: {{{startPoint.X,-7}\t-\t{startPoint.Y,-7}}}  " +
+                             $"\t  |\tEnd Point: {{{endPoint.X,-7}\t-\t{endPoint.Y,-7}}}  " +
+                             $"\t  |\tLenght: {length} \n";
+            }
+
+            return InfoViews;
+        }
+
         List<Line> GetLines(List<Curve> curves) => curves.OfType<Line>().ToList();
         List<Arc> GetArcs(List<Curve> curves) => curves.OfType<Arc>().ToList();
 
         List<Line> SimplifyListLines(List<Line> lines)
         {
-            List<Line> curves = new List<Line>();
-            HashSet<Curve> simplifiedCurves = new HashSet<Curve>();
+            List<Line> curves = new List<Line>();                       //Lineas Generadas
+            HashSet<Curve> simplifiedCurves = new HashSet<Curve>();     //Lineas Detectadas Para Generar Linea
 
             for (int i = 0; i < lines.Count; i++)
             {
@@ -130,7 +142,7 @@ namespace Ex.Core
 
                     if (nextLine != null)
                     {
-                        Line centeredLine = CreateCenteredLine(currentLine, nextLine);
+                        Line centeredLine = CreateCenteredLine(currentLine, nextLine, curves);
                         curves.Add(centeredLine);
                         simplifiedCurves.Add(currentLine);
                         simplifiedCurves.Add(nextLine);
@@ -138,7 +150,7 @@ namespace Ex.Core
                 }
             }
 
-            return curves;
+            return GroupLines(curves);
         }
 
         /// <returns><see cref="Line"/> paralela a <paramref name="origin"/></returns>
@@ -148,7 +160,8 @@ namespace Ex.Core
             for (int i = startIndex; i < lines.Count; i++)
             {
                 Line line = lines[i];
-                if (IsClose(MidPos(line.GetEndPoint(0), line.GetEndPoint(1)), MidPos(infoOrigin.Start, infoOrigin.End)) && AreParallel(origin, line))
+                LineInfo lineInfo = new LineInfo(line);
+                if (IsClose(lineInfo.MidPos(), infoOrigin.MidPos()) && AreParallel(origin, line))
                     return line;
             }
             return null;
@@ -158,17 +171,42 @@ namespace Ex.Core
         /// Crea la <see cref="Line"/> centrada entre las dos lineas que se le envian teniendo en cuenta su horientacion
         /// </summary>
         /// <returns>Devuelve una <see cref="Line"/> entre dos lineas</returns>
-        Line CreateCenteredLine(Line line1, Line line2)
+        Line CreateCenteredLine(Line l1, Line l2, List<Line> curves)
         {
-            LineInfo Info1 = new LineInfo(line1);
-            LineInfo Info2 = new LineInfo(line2);
+            LineInfo Info1 = new LineInfo(l1);
+            LineInfo Info2 = new LineInfo(l2);
 
             Line cl;
             cl = Line.CreateBound(new XYZ(MidCord(Info1.Left, Info2.Left), MidCord(Info1.Up, Info2.Up), 0),
-                                  new XYZ(MidCord(Info1.Right, Info2.Right), MidCord(Info1.Down, Info2.Down), 0));
+                                  new XYZ(MidCord(Info1.Right, Info2.Right), MidCord(Info1.Down, Info2.Down), 0));            
 
-            return Line.CreateBound(cl.GetEndPoint(0) - (cl.Direction / 4),
-                                    cl.GetEndPoint(1) + (cl.Direction / 4));
+            return Line.CreateBound(cl.GetEndPoint(0), cl.GetEndPoint(1));
+        }
+
+        List<Line> GroupLines(List<Line> curves)
+        {
+            List<Line> lines = new List<Line>();
+            for(int i = 0; i < curves.Count; i++)
+            {
+                Line curve = curves[i];
+                XYZ curveS = curve.GetEndPoint(0);
+                XYZ curveE = curve.GetEndPoint(1);
+
+                Line closeLineS = curves.FirstOrDefault(x => curve.Distance(x.Project(curveS).XYZPoint) < 0.1f &&
+                                               (curveS.DistanceTo(x.GetEndPoint(0)) < 0.001f || curveS.DistanceTo(x.GetEndPoint(1)) < 0.001f) && x != curve);
+                Line closeLineE = curves.FirstOrDefault(x => curve.Distance(x.Project(curveE).XYZPoint) < 0.1f &&
+                                               (curveE.DistanceTo(x.GetEndPoint(0)) < 0.001f || curveE.DistanceTo(x.GetEndPoint(1)) < 0.001f) && x != curve);
+
+                double distanceS = closeLineS != null ? Math.Round(curve.Distance(closeLineS.Project(curveS).XYZPoint), 2) : 1;
+                double distanceE = closeLineE != null ? Math.Round(curve.Distance(closeLineE.Project(curveE).XYZPoint), 2) : 1;
+
+                XYZ offsetS = distanceS != 0 ? curves[i].Direction / distanceS : XYZ.Zero;
+                XYZ offsetE = distanceE != 0 ? curves[i].Direction / distanceE : XYZ.Zero;
+
+                lines.Add(Line.CreateBound(curveS - offsetS/1.8f, curveE + offsetE/1.8f));
+            }
+
+            return lines;
         }
 
         //-------- Calcular Parametros --------//
@@ -182,7 +220,7 @@ namespace Ex.Core
         double MidCord(double a, double b) => (a + b) / 2;
         //-------------------------------------//
 
-        List<Wall> CreateWalls(Document doc, List<Line> lines, WallType wallType, Level level)
+        List<Wall> CreateWalls(Document doc, List<Line> lines, Level level)
         {
             List<Wall> walls = new List<Wall>();
             // Iniciar una transacción para realizar cambios en el modelo
@@ -215,7 +253,7 @@ namespace Ex.Core
             return Wall.Create(doc, offsetLine, wallType.Id, level.Id, 10.0, 0, false, false);
         }
 
-        public void CreateDoors(Document doc, List<Arc> arcs, List<Wall> walls ,FamilySymbol doorSymbol, Level level)
+        public void CreateDoors(Document doc, List<Arc> arcs, List<Wall> walls, Level level)
         {
             using (Transaction trans = new Transaction(doc, "Create Doors"))
             {
@@ -236,7 +274,7 @@ namespace Ex.Core
                         double distancia = curveWall.Distance(middlePoint);
                         if (distancia < 3)
                         {
-                            door = CreateDoorFromLine(doc, middlePoint, doorSymbol, wall, level);
+                            door = CreateDoorFromLine(doc, middlePoint, doorType, wall, level);
                             XYZ wallDir = wall.Orientation;
                             XYZ doorDir = door.FacingOrientation;
                             if(Math.Abs(wallDir.X) == 1)            //Puerta Vertical 

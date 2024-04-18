@@ -76,6 +76,10 @@
       <Project>{c090b18f-9960-4230-8a82-798ad8e57425}</Project>
       <Name>Ex.Ex2</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Ex.Ex3\Ex.Ex3.csproj">
+      <Project>{62BBE59C-5926-421D-A55D-CBCD03681652}</Project>
+      <Name>Ex.Ex3</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Ex.Test1\Ex.Test1.csproj">
       <Project>{CC3A35B7-6D09-49CC-90A2-1700C1DE5C31}</Project>
       <Name>Ex.Test1</Name>

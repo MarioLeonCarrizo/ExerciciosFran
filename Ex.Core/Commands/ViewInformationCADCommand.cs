@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Shapes;
 using System.Xaml;
@@ -259,6 +260,9 @@ namespace Ex.Core
         public XYZ Start;
         public XYZ End;
 
+        public XYZ StartF;
+        public XYZ EndF;
+
         public double Up;
         public double Down;
         public double Left;
@@ -273,6 +277,11 @@ namespace Ex.Core
             Down = Math.Min(Start.Y, End.Y);
             Left = Math.Min(Start.X, End.X);
             Right = Math.Max(Start.X, End.X);
+
+            StartF = new XYZ(Math.Round(Left, 3), Math.Round(Up, 3), Start.Z);
+            EndF = new XYZ(Math.Round(Right, 3), Math.Round(Down, 3), End.Z);
         }
+
+        public XYZ MidPos() => (Start + End) / 2;
     }
 }
