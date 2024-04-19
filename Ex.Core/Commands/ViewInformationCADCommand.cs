@@ -273,10 +273,10 @@ namespace Ex.Core
             Start = new XYZ(Math.Round(line.GetEndPoint(0).X,3), Math.Round(line.GetEndPoint(0).Y, 3), Math.Round(line.GetEndPoint(0).Z, 3));
             End = new XYZ(Math.Round(line.GetEndPoint(1).X, 3), Math.Round(line.GetEndPoint(1).Y, 3), Math.Round(line.GetEndPoint(1).Z, 3));
 
-            Up = Math.Max(Start.Y, End.Y);
-            Down = Math.Min(Start.Y, End.Y);
-            Left = Math.Min(Start.X, End.X);
-            Right = Math.Max(Start.X, End.X);
+            Up      = Math.Max(Start.Y, End.Y);
+            Down    = Math.Min(Start.Y, End.Y);
+            Left    = Math.Min(Start.X, End.X);
+            Right   = Math.Max(Start.X, End.X);
 
             StartF = new XYZ(Math.Round(Left, 3), Math.Round(Up, 3), Start.Z);
             EndF = new XYZ(Math.Round(Right, 3), Math.Round(Down, 3), End.Z);

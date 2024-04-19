@@ -39,8 +39,7 @@ namespace Ex.Core
                 return Result.Cancelled;
             }
 
-            
-
+            //Crear Forms para seleccionar familia muros y puertas
             using (var window = new FrmSelectWalls(doc))
             {
                 window.ShowDialog();
@@ -50,10 +49,10 @@ namespace Ex.Core
 
                 wallType = window.GetWall();
                 doorType = window.GetDoor();
-                //doc.LoadFamilySymbol("C:\\.rfa", doorType.Name);
 
                 if(window.CreateCheckNote())
                 {
+                    //Crear Nota con toda la informacion de la lista de lineas y arcos
                     using (Transaction tx = new Transaction(doc, "Generar Text Note"))
                     {
                         tx.Start();
@@ -72,25 +71,29 @@ namespace Ex.Core
                 }
             }
 
+            //Instanciar Muros
             List<Wall> walls = CreateWalls(doc, SimplifyListLines(GetLines(curves)), GetLevelByName(doc, doc.ActiveView.Name));
+            //Instanciar Puertas
             CreateDoors(doc, GetArcs(curves), walls, GetLevelByName(doc, doc.ActiveView.Name));
 
             return Result.Succeeded;
         }
 
+        /// <summary>
+        /// Obtiene todas las lineas y arcos creados en la vista actual
+        /// </summary>
+        /// <returns>Devuelve una lista con todas las lineas y arcos del Documento</returns>
         List<Curve> ObtenerCurve(Document doc)
         {
             List<Curve> curves = new List<Curve>();
-            FilteredElementCollector collector = new FilteredElementCollector(doc);
-            ICollection<Element> importedCADs = collector.OfClass(typeof(CurveElement)).ToElements();
+            ICollection<Element> importedCADs = new FilteredElementCollector(doc).OfClass(typeof(CurveElement)).ToElements();
 
             foreach (CurveElement importedCAD in importedCADs)
             {
                 if (importedCAD.Location is LocationCurve locationCurve)
                 {
                     Curve curve = locationCurve.Curve;
-                    if (curve.Length > 0.35f)
-                        curves.Add(curve);
+                    curves.Add(curve);
                 }
             }
 
@@ -125,7 +128,13 @@ namespace Ex.Core
             return InfoViews;
         }
 
+        /// <summary>
+        /// A partir de una lista de <see cref="Curve"/>, devuelve solo las que son de tipo <see cref="Line"/>
+        /// </summary>
         List<Line> GetLines(List<Curve> curves) => curves.OfType<Line>().ToList();
+        /// <summary>
+        /// A partir de una lista de <see cref="Curve"/>, devuelve solo las que son de tipo <see cref="Arc"/>
+        /// </summary>
         List<Arc> GetArcs(List<Curve> curves) => curves.OfType<Arc>().ToList();
 
         List<Line> SimplifyListLines(List<Line> lines)
@@ -138,11 +147,12 @@ namespace Ex.Core
                 Line currentLine = lines[i];
                 if (!simplifiedCurves.Contains(lines[i]))
                 {
+                    //Encontrar Linea Paralela
                     Line nextLine = FindParalelLine(lines, i + 1, currentLine);
 
                     if (nextLine != null)
                     {
-                        Line centeredLine = CreateCenteredLine(currentLine, nextLine, curves);
+                        Line centeredLine = CreateCenteredLine(currentLine, nextLine);
                         curves.Add(centeredLine);
                         simplifiedCurves.Add(currentLine);
                         simplifiedCurves.Add(nextLine);
@@ -171,14 +181,13 @@ namespace Ex.Core
         /// Crea la <see cref="Line"/> centrada entre las dos lineas que se le envian teniendo en cuenta su horientacion
         /// </summary>
         /// <returns>Devuelve una <see cref="Line"/> entre dos lineas</returns>
-        Line CreateCenteredLine(Line l1, Line l2, List<Line> curves)
+        Line CreateCenteredLine(Line l1, Line l2)
         {
             LineInfo Info1 = new LineInfo(l1);
             LineInfo Info2 = new LineInfo(l2);
 
-            Line cl;
-            cl = Line.CreateBound(new XYZ(MidCord(Info1.Left, Info2.Left), MidCord(Info1.Up, Info2.Up), 0),
-                                  new XYZ(MidCord(Info1.Right, Info2.Right), MidCord(Info1.Down, Info2.Down), 0));            
+            Line cl = Line.CreateBound(new XYZ(MidCord(Info1.Left, Info2.Left), MidCord(Info1.Up, Info2.Up), 0),
+                                       new XYZ(MidCord(Info1.Right, Info2.Right), MidCord(Info1.Down, Info2.Down), 0));            
 
             return Line.CreateBound(cl.GetEndPoint(0), cl.GetEndPoint(1));
         }
@@ -188,21 +197,26 @@ namespace Ex.Core
             List<Line> lines = new List<Line>();
             for(int i = 0; i < curves.Count; i++)
             {
+                //Guardamos informacion de la linea actual
                 Line curve = curves[i];
                 XYZ curveS = curve.GetEndPoint(0);
                 XYZ curveE = curve.GetEndPoint(1);
 
+                //Buscamos si hay una linea cerca, pero descartamos si hace esquina
                 Line closeLineS = curves.FirstOrDefault(x => curve.Distance(x.Project(curveS).XYZPoint) < 0.1f &&
                                                (curveS.DistanceTo(x.GetEndPoint(0)) < 0.001f || curveS.DistanceTo(x.GetEndPoint(1)) < 0.001f) && x != curve);
                 Line closeLineE = curves.FirstOrDefault(x => curve.Distance(x.Project(curveE).XYZPoint) < 0.1f &&
                                                (curveE.DistanceTo(x.GetEndPoint(0)) < 0.001f || curveE.DistanceTo(x.GetEndPoint(1)) < 0.001f) && x != curve);
 
+                //Calculamos la distancia entre la linea actual y la cercana
                 double distanceS = closeLineS != null ? Math.Round(curve.Distance(closeLineS.Project(curveS).XYZPoint), 2) : 1;
                 double distanceE = closeLineE != null ? Math.Round(curve.Distance(closeLineE.Project(curveE).XYZPoint), 2) : 1;
 
+                //Calculamos la direccion y distancia que tiene que recorrer la linea para unirse con el muro
                 XYZ offsetS = distanceS != 0 ? curves[i].Direction / distanceS : XYZ.Zero;
                 XYZ offsetE = distanceE != 0 ? curves[i].Direction / distanceE : XYZ.Zero;
 
+                //Creamos una nueva linea apartir de la anterior sumandole los offsets
                 lines.Add(Line.CreateBound(curveS - offsetS/1.8f, curveE + offsetE/1.8f));
             }
 
@@ -214,12 +228,17 @@ namespace Ex.Core
         bool AreParallel(Line line1, Line line2) => Math.Abs(Math.Abs(line1.Direction.DotProduct(line2.Direction)) - 1) < 1;
         /// <returns><see langword="true"/> en caso de que los dos puntos esten cerca</returns>
         bool IsClose(XYZ a, XYZ b) => a.DistanceTo(b) < 3;
-        /// <returns>La media entre dos coordenadas</returns>
-        XYZ MidPos(XYZ a, XYZ b) => (a + b) / 2;
         /// <returns> La media entre dos variables</returns>
         double MidCord(double a, double b) => (a + b) / 2;
         //-------------------------------------//
 
+        /// <summary>
+        /// Crea muros a partir de la lineas en el nivel especificado
+        /// </summary>
+        /// <param name="doc">Documento actual</param>
+        /// <param name="lines">Lista de lineas de referencia</param>
+        /// <param name="level">Nivel en el que se generaran</param>
+        /// <returns>Devuelve una lista de <see cref="Wall"/> instanciada</returns>
         List<Wall> CreateWalls(Document doc, List<Line> lines, Level level)
         {
             List<Wall> walls = new List<Wall>();
@@ -253,6 +272,13 @@ namespace Ex.Core
             return Wall.Create(doc, offsetLine, wallType.Id, level.Id, 10.0, 0, false, false);
         }
 
+        /// <summary>
+        /// Genera puertas a partir de una lista de <see cref="Arc"/>
+        /// </summary>
+        /// <param name="doc">Documento en el que se generaran las puertas</param>
+        /// <param name="arcs">Lista de Arcos con los que generara las puertas</param>
+        /// <param name="walls">Lista de Muros en los que generara las puertas</param>
+        /// <param name="level">Vista colocara las puertas</param>
         public void CreateDoors(Document doc, List<Arc> arcs, List<Wall> walls, Level level)
         {
             using (Transaction trans = new Transaction(doc, "Create Doors"))
@@ -262,32 +288,42 @@ namespace Ex.Core
                 XYZ offset = new XYZ(0, 60, 0);
                 foreach (Arc arc in arcs)
                 {
-                    FamilyInstance door;
+                    //Guardamos toda la informacion necessario del arco seleccionado
                     XYZ center = new XYZ(Math.Round(arc.Center.X, 3), Math.Round(arc.Center.Y, 3), Math.Round(arc.Center.Z, 3));
                     XYZ dir = CalcularDireccion(arc.GetEndPoint(0), arc.GetEndPoint(1), center, Math.Round(arc.Radius, 3));
                     XYZ middlePoint = arc.Center + new XYZ((arc.Radius / 2) * dir.X, (arc.Radius / 2) * dir.Y, 0) + offset;
 
                     foreach (Wall wall in walls)
                     {
+                        //Obtenemos los datos de posicion del muro y miramos si esta cerca de la puerta
                         LocationCurve locationCurve = wall.Location as LocationCurve;
-                        Curve curveWall = locationCurve.Curve;
-                        double distancia = curveWall.Distance(middlePoint);
+                        double distancia = locationCurve.Curve.Distance(middlePoint);
                         if (distancia < 3)
                         {
-                            door = CreateDoorFromLine(doc, middlePoint, doorType, wall, level);
-                            XYZ wallDir = wall.Orientation;
-                            XYZ doorDir = door.FacingOrientation;
-                            if(Math.Abs(wallDir.X) == 1)            //Puerta Vertical 
+                            try
                             {
-                                if(dir.X == -1) door.flipFacing();
-                                if(dir.Y == -1) door.flipHand();
+                                //Intentamos crear la puerta en el muro
+                                FamilyInstance door = CreateDoorFromLine(doc, middlePoint, doorType, wall, level);
+                                XYZ wallDir = wall.Orientation;
+                                XYZ doorDir = door.FacingOrientation;
+                                //Rotamos la puerta en base a la direccion del muro y la direccion del arco
+                                if (Math.Abs(wallDir.X) == 1)            //Puerta Vertical 
+                                {
+                                    if (dir.X == -1) door.flipFacing();
+                                    if (dir.Y == -1) door.flipHand();
+                                }
+                                else if (Math.Abs(wallDir.Y) == 1)       //Puerta Vertical
+                                {
+                                    if (dir.X == 1) door.flipHand();
+                                    if (dir.Y == -1) door.flipFacing();
+                                }
+                                break;
                             }
-                            else if(Math.Abs(wallDir.Y) == 1)       //Puerta Vertical
+                            catch
                             {
-                                if (dir.X == 1) door.flipHand();
-                                if (dir.Y == -1) door.flipFacing();
+                                Message.Display("La Familia de la puerta no ha sido cargada en el proyecto", WindowType.Error);
+                                return;
                             }
-                            break;
                         }
                     }
                 }
@@ -296,11 +332,13 @@ namespace Ex.Core
             }
         }
 
+        /// <returns>Devuelve una Instancia de la Puerta Creada</returns>
         FamilyInstance CreateDoorFromLine(Document doc, XYZ middlePoint, FamilySymbol doorSymbol, Element wall, Level level)
         {
             return doc.Create.NewFamilyInstance(middlePoint, doorSymbol, wall, level, StructuralType.NonStructural);
         }
 
+        /// <returns>Devuelve la dirreccion del arco</returns>
         XYZ CalcularDireccion(XYZ a, XYZ b, XYZ center, double radius)
         {
             XYZ aPoint = (a - center) / radius;
