@@ -55,6 +55,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\GeneradorMasterPlanos.cs" />
     <Compile Include="Commands\GenerateHouseWithCADPlan.cs" />
     <Compile Include="Commands\RegisterMoveObjectCommand.cs" />
     <Compile Include="Commands\ViewInformationCADCommand.cs" />

@@ -186,6 +186,7 @@ namespace Ex.Core
             LineInfo Info1 = new LineInfo(l1);
             LineInfo Info2 = new LineInfo(l2);
 
+            //Creamos una linea en medio de las dos lineas
             Line cl = Line.CreateBound(new XYZ(MidCord(Info1.Left, Info2.Left), MidCord(Info1.Up, Info2.Up), 0),
                                        new XYZ(MidCord(Info1.Right, Info2.Right), MidCord(Info1.Down, Info2.Down), 0));            
 

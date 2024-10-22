@@ -46,6 +46,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CalculationManager.cs" />
+    <Compile Include="ClassesCurves.cs" />
+    <Compile Include="FrmInfoView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmInfoView.Designer.cs">
+      <DependentUpon>FrmInfoView.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmSelectWalls.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -55,6 +63,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FrmInfoView.resx">
+      <DependentUpon>FrmInfoView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmSelectWalls.resx">
       <DependentUpon>FrmSelectWalls.cs</DependentUpon>
     </EmbeddedResource>

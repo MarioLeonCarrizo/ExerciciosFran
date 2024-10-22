@@ -34,12 +34,14 @@
             this.label2 = new System.Windows.Forms.Label();
             this.btCrear = new System.Windows.Forms.Button();
             this.cbTextNote = new System.Windows.Forms.CheckBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cbWindows = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // cbDoor
             // 
             this.cbDoor.FormattingEnabled = true;
-            this.cbDoor.Location = new System.Drawing.Point(12, 91);
+            this.cbDoor.Location = new System.Drawing.Point(12, 79);
             this.cbDoor.Name = "cbDoor";
             this.cbDoor.Size = new System.Drawing.Size(209, 24);
             this.cbDoor.TabIndex = 0;
@@ -64,7 +66,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 72);
+            this.label2.Location = new System.Drawing.Point(12, 60);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(72, 16);
             this.label2.TabIndex = 2;
@@ -72,7 +74,7 @@
             // 
             // btCrear
             // 
-            this.btCrear.Location = new System.Drawing.Point(146, 134);
+            this.btCrear.Location = new System.Drawing.Point(146, 165);
             this.btCrear.Name = "btCrear";
             this.btCrear.Size = new System.Drawing.Size(75, 23);
             this.btCrear.TabIndex = 3;
@@ -83,19 +85,38 @@
             // cbTextNote
             // 
             this.cbTextNote.AutoSize = true;
-            this.cbTextNote.Location = new System.Drawing.Point(15, 134);
+            this.cbTextNote.Location = new System.Drawing.Point(15, 165);
             this.cbTextNote.Name = "cbTextNote";
             this.cbTextNote.Size = new System.Drawing.Size(130, 20);
             this.cbTextNote.TabIndex = 4;
             this.cbTextNote.Text = "Create Text Note";
             this.cbTextNote.UseVisualStyleBackColor = true;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 107);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(97, 16);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Windows Type";
+            // 
+            // cbWindows
+            // 
+            this.cbWindows.FormattingEnabled = true;
+            this.cbWindows.Location = new System.Drawing.Point(12, 126);
+            this.cbWindows.Name = "cbWindows";
+            this.cbWindows.Size = new System.Drawing.Size(209, 24);
+            this.cbWindows.TabIndex = 5;
+            // 
             // FrmSelectWalls
             // 
             this.AcceptButton = this.btCrear;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(239, 175);
+            this.ClientSize = new System.Drawing.Size(239, 197);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.cbWindows);
             this.Controls.Add(this.cbTextNote);
             this.Controls.Add(this.btCrear);
             this.Controls.Add(this.label2);
@@ -121,5 +142,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btCrear;
         private System.Windows.Forms.CheckBox cbTextNote;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox cbWindows;
     }
 }

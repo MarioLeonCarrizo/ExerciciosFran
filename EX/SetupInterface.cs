@@ -23,7 +23,7 @@ namespace Ex
             var panelEx2 = app.CreateRibbonPanel(tabName, "Ex2");
             var panelEx3 = app.CreateRibbonPanel(tabName, "Ex3");
             var panelEx4 = app.CreateRibbonPanel(tabName, "Ex4");
-            var panelTest1 = app.CreateRibbonPanel(tabName, "Test1");
+            var panelEx5 = app.CreateRibbonPanel(tabName, "Ex5");
 
             // -------------- EX1 -------------- //
             RevitPushButton btEx1 = new RevitPushButton("Reseteador de parametros", panelEx1, 
@@ -47,12 +47,11 @@ namespace Ex
                                                         "Descripcion", GenerateHouseWithCADPlan.GetPath(),
                                                         "32_px.png", "windows_128_px.png");
             var bt4 = btEx4.Create();
-
-            // -------------- TEST1 -------------- //
-            RevitPushButton btTest1 = new RevitPushButton("Mover Objeto Seleccionado", panelTest1,
-                                                        "Descripcion", MoveObjectCommand.GetPath(),
+            // -------------- Final -------------- //
+            RevitPushButton btEx5 = new RevitPushButton("Generar Estructura\nArchivo CAD Master", panelEx5,
+                                                        "Descripcion", GeneradorMasterPlanos.GetPath(),
                                                         "32_px.png", "windows_128_px.png");
-            var btt1 = btTest1.Create();
+            var bt5 = btEx5.Create();
         }
     }
 }
